@@ -12,6 +12,8 @@ This repo will also watch for Zoom client updates and create a PR when
 a new version is released, allowing you to update your repo on your
 own schedule.
 
+![Update PR](contrib/pr.png?raw=true "PR")
+
 # How to use
 
 ## Fork / clone this repo to your own Github

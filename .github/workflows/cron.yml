@@ -1,0 +1,75 @@
+name: "Check for Zoom updates"
+
+on:
+  schedule:
+  - cron: '1 */6 * * *'
+
+jobs:
+  check-update:
+    name: "Check for Zoom client updates"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os_version: [ 31 ]
+        os_type: [ fedora ]
+        arch: [ x86_64 ]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: sources
+      - name: set version
+        run: |
+          echo "::set-env name=ZOOM_VERSION::$(cat sources/VERSION)"
+      - name: check for update
+        run: |
+          LATEST=`curl -s -I HEAD https://zoom.us/client/latest/zoom_${{ matrix.arch }}.rpm | egrep '^location:' | sed -e 's@^.*/prod/\([.0-9]*\)/zoom_${{ matrix.arch }}.rpm.*$@\1@'`
+
+          echo "Parsed latest version: '$LATEST'"
+          if [ -z "$LATEST" ]; then
+            exit 1
+          fi
+          echo "::set-env name=LATEST_ZOOM_VERSION::${LATEST}"
+      - name: test version
+        run: |
+          if [ "$LATEST_ZOOM_VERSION" = "$ZOOM_VERSION" ]; then
+            echo "::set-env name=SKIP_BUILD::true"
+          fi
+      - name: check for previous PR
+        if: env.SKIP_BUILD != 'true'
+        uses: juliangruber/find-pull-request-action@v1
+        id: find-pull-request
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          branch: updates/version-${{ env.LATEST_ZOOM_VERSION }}
+      - name: bail if previous
+        if: env.SKIP_BUILD != 'true'
+        env:
+          PR_NUM: ${{ steps.find-pull-request.outputs.number }}
+        run: |
+          if [ -n "$PR_NUM" ]; then
+            echo "Previous PR already open at ${PR_NUM}, skipping update"
+            echo "::set-env name=SKIP_BUILD::true"
+          fi
+      - name: update version
+        if: env.SKIP_BUILD != 'true'
+        run: |
+          echo "$LATEST_ZOOM_VERSION" > sources/VERSION
+      - name: open PR
+        if: env.SKIP_BUILD != 'true'
+        id: cpr
+        uses: peter-evans/create-pull-request@v2
+        with:
+          path: sources
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update to version ${{ env.LATEST_ZOOM_VERSION }}
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          title: '[Update] Update to version ${{ env.LATEST_ZOOM_VERSION }}'
+          body: |
+            New version update
+            - New: `${{ env.LATEST_ZOOM_VERSION }}`
+            - Previous: `${{ env.ZOOM_VERSION }}`
+          labels: automated pr
+          draft: false
+          branch: updates/version-${{ env.LATEST_ZOOM_VERSION }}

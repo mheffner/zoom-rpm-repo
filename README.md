@@ -78,6 +78,7 @@ baseurl=https://${S3_BUCKET}.s3.amazonaws.com/$basearch
 enabled=1
 gpgkey=https://zoom.us/linux/download/pubkey
 gpgcheck=1
+metadata_expire=6h
 ```
 
 ## Install

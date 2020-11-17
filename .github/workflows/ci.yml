@@ -22,7 +22,7 @@ jobs:
           path: sources
       - name: set version
         run: |
-          echo "::set-env name=ZOOM_VERSION::$(cat sources/VERSION)"
+          echo "ZOOM_VERSION=$(cat sources/VERSION)" >> $GITHUB_ENV
       - name: install deps
         run: |
           dnf -y install python-pip createrepo && \

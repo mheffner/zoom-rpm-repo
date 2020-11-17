@@ -20,7 +20,7 @@ jobs:
           path: sources
       - name: set version
         run: |
-          echo "::set-env name=ZOOM_VERSION::$(cat sources/VERSION)"
+          echo "ZOOM_VERSION=$(cat sources/VERSION)" >> $GITHUB_ENV
       - name: check for update
         run: |
           LATEST=`curl -s -I HEAD https://zoom.us/client/latest/zoom_${{ matrix.arch }}.rpm | egrep '^location:' | sed -e 's@^.*/prod/\([.0-9]*\)/zoom_${{ matrix.arch }}.rpm.*$@\1@'`
@@ -29,11 +29,11 @@ jobs:
           if [ -z "$LATEST" ]; then
             exit 1
           fi
-          echo "::set-env name=LATEST_ZOOM_VERSION::${LATEST}"
+          echo "LATEST_ZOOM_VERSION=${LATEST}" >> $GITHUB_ENV
       - name: test version
         run: |
           if [ "$LATEST_ZOOM_VERSION" = "$ZOOM_VERSION" ]; then
-            echo "::set-env name=SKIP_BUILD::true"
+            echo "SKIP_BUILD=true" >> $GITHUB_ENV
           fi
       - name: check for previous PR
         if: env.SKIP_BUILD != 'true'
@@ -49,7 +49,7 @@ jobs:
         run: |
           if [ -n "$PR_NUM" ]; then
             echo "Previous PR already open at ${PR_NUM}, skipping update"
-            echo "::set-env name=SKIP_BUILD::true"
+            echo "SKIP_BUILD=true" >> $GITHUB_ENV
           fi
       - name: update version
         if: env.SKIP_BUILD != 'true'

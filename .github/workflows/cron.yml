@@ -7,7 +7,7 @@ on:
 jobs:
   check-update:
     name: "Check for Zoom client updates"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         os_version: [ 31 ]

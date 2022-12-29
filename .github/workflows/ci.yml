@@ -10,7 +10,7 @@ jobs:
       YUM_REPODIR: "/github/home/zoomrepo"
     strategy:
       matrix:
-        os_version: [ 31, 36 ]
+        os_version: [ 36 ]
         os_type: [ fedora ]
         arch: [ x86_64 ]
       fail-fast: false

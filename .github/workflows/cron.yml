@@ -15,7 +15,7 @@ jobs:
         arch: [ x86_64 ]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           path: sources
       - name: set version
@@ -58,7 +58,7 @@ jobs:
       - name: open PR
         if: env.SKIP_BUILD != 'true'
         id: cpr
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v5
         with:
           path: sources
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -17,7 +17,7 @@ jobs:
     container:
       image: ${{ matrix.os_type }}:${{ matrix.os_version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           path: sources
       - name: set version

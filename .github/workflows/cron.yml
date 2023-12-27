@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os_version: [ 36, 37, 38 ]
+        os_version: [ 39 ]
         os_type: [ fedora ]
         arch: [ x86_64 ]
       fail-fast: false

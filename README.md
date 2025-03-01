@@ -76,7 +76,7 @@ Create the following file in `/etc/yum.repos.d/zoom.repo`:
 name=zoom
 baseurl=https://${S3_BUCKET}.s3.amazonaws.com/$basearch
 enabled=1
-gpgkey=https://zoom.us/linux/download/pubkey?version=5-12-6
+gpgkey=https://zoom.us/linux/download/pubkey?version=6-3-10
 gpgcheck=1
 metadata_expire=6h
 ```
